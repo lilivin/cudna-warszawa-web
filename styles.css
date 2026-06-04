@@ -321,12 +321,12 @@ section { position: relative; z-index: 1; }
    ============================================================ */
 .about { padding-block: clamp(80px, 12vh, 150px); }
 .about-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(40px, 6vw, 90px); align-items: center; }
-.about-figure { position: relative; }
+.about-figure { position: relative; width: 100%; max-width: 320px; margin-inline: auto; justify-self: center; align-self: center; }
 .about-figure .frame {
   border: 1px solid var(--line); padding: 14px; background: var(--paper-card);
   box-shadow: var(--shadow-soft);
 }
-.about-figure img { display: block; width: 100%; aspect-ratio: 3/3.6; object-fit: cover; }
+.about-figure img { display: block; width: 100%; height: auto; aspect-ratio: 9/16; object-fit: cover; object-position: 50% 50%; }
 .about-figure .stamp {
   position: absolute; right: -24px; top: -24px;
   width: 118px; height: 118px; border-radius: 50%;
@@ -513,25 +513,46 @@ section { position: relative; z-index: 1; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 860px) {
-  /* na mobilce pasek nawigacji zawsze ma pełne tło i stałą wysokość —
-     nie „chowa się" pod treścią ani nie skacze przy scrollu, działa też pod notch */
+  /* MOBILE: pasek NA STAŁE — nie chowa się, nie zmniejsza, nie miga.
+     position: sticky (zamiast fixed) jest przyklejony do scrolla, a nie do
+     viewportu, więc nie odkleja się przy chowaniu paska adresu iOS Safari.
+     Pełne tło, bez backdrop-filter i bez transform/will-change (to one
+     powodowały gubienie warstwy na iOS). Stała wysokość = brak zmniejszania. */
   .nav {
-    background: color-mix(in srgb, var(--paper) 94%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom-color: var(--line);
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid var(--line);
     box-shadow: var(--shadow-soft);
     padding-block: 12px;
     padding-top: max(12px, env(safe-area-inset-top));
+    transform: none;
+    will-change: auto;
+    transition: none;
   }
-  .nav.scrolled { padding-block: 12px; padding-top: max(12px, env(safe-area-inset-top)); }
+  /* na mobilce stan „scrolled" niczego nie zmienia — pasek wygląda zawsze tak samo */
+  .nav.scrolled {
+    background: var(--paper);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-soft);
+    padding-block: 12px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    transform: none;
+  }
+  /* nav jest teraz w przepływie (sticky), więc hero nie potrzebuje dużego odstępu na fixed */
+  .hero { padding-top: clamp(28px, 5vh, 48px); }
   .nav-links { display: none; }
   .nav-burger { display: inline-grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 3px; background: var(--paper-card); cursor: pointer; }
   .nav-burger svg { width: 24px; height: 24px; }
   .hero-grid { grid-template-columns: 1fr; }
   .hero-figure { max-width: 440px; margin-inline: auto; order: -1; }
   .about-grid { grid-template-columns: 1fr; }
-  .about-figure { max-width: 420px; }
+  .about-figure { max-width: 300px; }
   .why-grid { grid-template-columns: 1fr; }
   .contact-grid { grid-template-columns: 1fr; }
 }
@@ -549,7 +570,14 @@ section { position: relative; z-index: 1; }
 .mobile-menu { position: fixed; inset: 0; z-index: 60; background: var(--paper); transform: translateX(100%); transition: transform .4s cubic-bezier(.7,0,.2,1); display: flex; flex-direction: column; padding: 28px var(--gutter); }
 .mobile-menu.open { transform: none; }
 .mobile-menu-top { display: flex; justify-content: space-between; align-items: center; }
-.mobile-menu-close { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid var(--line); border-radius: 3px; background: var(--paper-card); cursor: pointer; }
+/* logo w menu mobilnym — większe niż w pasku */
+.mobile-menu .brand-mark { width: 54px; height: 54px; font-size: 1.85rem; }
+.mobile-menu .brand-name b { font-size: 1.5rem; }
+.mobile-menu .brand-name span { font-size: .72rem; }
+/* przycisk X — bez tła i ramki, sam ikona */
+.mobile-menu-close { width: 44px; height: 44px; display: grid; place-items: center; border: none; background: none; color: var(--ink); cursor: pointer; transition: color .2s, transform .2s; }
+.mobile-menu-close:hover { color: var(--accent); transform: rotate(90deg); }
+.mobile-menu-close svg { width: 28px; height: 28px; }
 .mobile-menu nav { display: flex; flex-direction: column; gap: 6px; margin-top: 40px; }
 .mobile-menu nav a { font-family: var(--display); font-size: 2rem; font-weight: 500; padding: 10px 0; border-bottom: 1px solid var(--line); }
 .mobile-menu .btn { margin-top: 30px; }
