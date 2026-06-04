@@ -567,8 +567,21 @@ section { position: relative; z-index: 1; }
 }
 
 /* menu mobilne */
-.mobile-menu { position: fixed; inset: 0; z-index: 60; background: var(--paper); transform: translateX(100%); transition: transform .4s cubic-bezier(.7,0,.2,1); display: flex; flex-direction: column; padding: 28px var(--gutter); }
-.mobile-menu.open { transform: none; }
+/* Kontener: dokładnie viewport (inset:0), overflow:hidden — niezawodnie obcina
+   przesunięty panel-dziecko (absolute). To NIE position:fixed na przesuwanym
+   elemencie, więc nie powstaje poziomy scroll na iOS Safari. */
+.mobile-menu { position: fixed; inset: 0; z-index: 60; overflow: hidden; visibility: hidden; pointer-events: none; }
+.mobile-menu.open { visibility: visible; pointer-events: auto; }
+.mobile-menu-panel {
+  position: absolute; inset: 0;
+  background: var(--paper);
+  display: flex; flex-direction: column;
+  padding: 28px var(--gutter);
+  padding-top: max(28px, env(safe-area-inset-top));
+  transform: translateX(100%);
+  transition: transform .4s cubic-bezier(.7,0,.2,1);
+}
+.mobile-menu.open .mobile-menu-panel { transform: none; }
 .mobile-menu-top { display: flex; justify-content: space-between; align-items: center; }
 /* logo w menu mobilnym — większe niż w pasku */
 .mobile-menu .brand-mark { width: 54px; height: 54px; font-size: 1.85rem; }
